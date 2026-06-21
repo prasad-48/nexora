@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders — Nexora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'sans-serif'] },
+        boxShadow: {
+          'card': '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
+          'card-hover': '0 4px 12px rgba(0,0,0,0.06), 0 16px 32px rgba(0,0,0,0.10)',
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="font-sans bg-[#f7f7f9]">
+
+<nav class="bg-[#0a0a0a] sticky top-0 z-50 border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="index.html" class="text-white text-xl font-extrabold tracking-tight">
+      NEX<span class="text-indigo-500">ORA</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-8 text-[13px] font-medium text-gray-400">
+      <a href="index.html" class="hover:text-white transition-colors">Home</a>
+      <a href="index.html?category=Laptops" class="hover:text-white transition-colors">Laptops</a>
+      <a href="index.html?category=Phones" class="hover:text-white transition-colors">Phones</a>
+      <a href="index.html?category=Tablets" class="hover:text-white transition-colors">Tablets</a>
+      <a href="index.html?category=Accessories" class="hover:text-white transition-colors">Accessories</a>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <a href="cart.html" class="relative w-9 h-9 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white">
+        <i class="ti ti-shopping-cart text-[18px]"></i>
+        <span id="cart-count" class="absolute -top-1 -right-1 bg-indigo-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">0</span>
+      </a>
+      <a href="orders.html" class="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white">
+        <i class="ti ti-package text-[18px]"></i>
+      </a>
+      <a href="login.html" id="nav-auth-link" class="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white">
+        <i class="ti ti-user text-[18px]"></i>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-6 py-10 pb-24">
+  <h1 class="text-2xl font-bold text-gray-900 mb-8">My orders</h1>
+
+  <div id="login-prompt" class="hidden text-center py-24">
+    <i class="ti ti-lock text-5xl text-gray-300 mb-4"></i>
+    <h2 class="text-xl font-bold text-gray-900 mb-2">Sign in to view orders</h2>
+    <p class="text-sm text-gray-500 mb-6">Your order history is available after you log in.</p>
+    <a href="login.html" class="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-colors">
+      <i class="ti ti-login text-sm"></i> Login or register
+    </a>
+  </div>
+
+  <div id="loading-state" class="hidden flex justify-center py-32">
+    <div class="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+
+  <div id="error-state" class="hidden text-center py-24">
+    <p id="error-message" class="text-red-500 text-sm mb-4"></p>
+    <button type="button" onclick="loadOrders()" class="text-indigo-500 hover:text-indigo-600 text-sm font-semibold">Try again</button>
+  </div>
+
+  <div id="empty-state" class="hidden text-center py-24">
+    <i class="ti ti-package text-5xl text-gray-300 mb-4"></i>
+    <h2 class="text-xl font-bold text-gray-900 mb-2">No orders yet</h2>
+    <p class="text-sm text-gray-500 mb-6">When you place an order, it will show up here.</p>
+    <a href="index.html" class="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-colors">
+      <i class="ti ti-shopping-bag text-sm"></i> Start shopping
+    </a>
+  </div>
+
+  <div id="orders-list" class="hidden space-y-4"></div>
+</main>
+
+<footer class="bg-[#0a0a0a] text-gray-400 py-12 px-6">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <p class="text-white font-extrabold text-lg">NEX<span class="text-indigo-500">ORA</span></p>
+    <p class="text-sm">&copy; 2026 Nexora. Built as a portfolio project by Prasad.</p>
+  </div>
+</footer>
+
+<div id="chat-widget-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/chat.js"></script>
+<script>
+  function formatPrice(amount) {
+    return '₹' + amount.toLocaleString('en-IN');
+  }
+
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  function statusBadge(status) {
+    const styles = {
+      pending: 'bg-amber-100 text-amber-700 border-amber-200',
+      shipped: 'bg-blue-100 text-blue-700 border-blue-200',
+      delivered: 'bg-green-100 text-green-700 border-green-200',
+      cancelled: 'bg-red-100 text-red-700 border-red-200',
+    };
+    const cls = styles[status] || 'bg-gray-100 text-gray-700 border-gray-200';
+    return `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${cls}">${status}</span>`;
+  }
+
+  function renderOrderItem(item) {
+    const name = item.product ? item.product.name : `Product #${item.product_id}`;
+    const lineTotal = item.price * item.quantity;
+    return `
+      <div class="flex justify-between items-center py-2 text-sm">
+        <div>
+          <span class="font-medium text-gray-900">${name}</span>
+          <span class="text-gray-400 ml-2">× ${item.quantity}</span>
+        </div>
+        <span class="font-semibold text-gray-900">${formatPrice(lineTotal)}</span>
+      </div>
+    `;
+  }
+
+  function renderOrder(order) {
+    const items = order.order_items || [];
+    const itemsHtml = items.map(renderOrderItem).join('');
+    return `
+      <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100">
+          <div>
+            <p class="text-sm font-bold text-gray-900">Order #${order.id}</p>
+            <p class="text-xs text-gray-500 mt-1">${formatDate(order.created_at)}</p>
+          </div>
+          <div class="flex items-center gap-3">
+            ${statusBadge(order.status)}
+            <span class="text-sm font-bold text-gray-900">${formatPrice(order.total_amount)}</span>
+          </div>
+        </div>
+        <div class="px-5 py-4">
+          <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Items</p>
+          <div class="divide-y divide-gray-50">${itemsHtml}</div>
+          ${order.address ? `<p class="text-xs text-gray-500 mt-4 pt-3 border-t border-gray-100"><i class="ti ti-map-pin text-gray-400"></i> ${order.address}</p>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function hideAllStates() {
+    document.getElementById('login-prompt').classList.add('hidden');
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('error-state').classList.add('hidden');
+    document.getElementById('empty-state').classList.add('hidden');
+    document.getElementById('orders-list').classList.add('hidden');
+  }
+
+  async function loadOrders() {
+    if (!localStorage.getItem('nexora_token')) {
+      hideAllStates();
+      document.getElementById('login-prompt').classList.remove('hidden');
+      return;
+    }
+
+    hideAllStates();
+    document.getElementById('loading-state').classList.remove('hidden');
+
+    try {
+      const orders = await getMyOrders();
+      document.getElementById('loading-state').classList.add('hidden');
+
+      if (orders.length === 0) {
+        document.getElementById('empty-state').classList.remove('hidden');
+        return;
+      }
+
+      const list = document.getElementById('orders-list');
+      list.innerHTML = orders.map(renderOrder).join('');
+      list.classList.remove('hidden');
+    } catch (err) {
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('error-message').textContent = err.message || 'Could not load orders.';
+      document.getElementById('error-state').classList.remove('hidden');
+    }
+  }
+
+  loadOrders();
+  updateCartCount();
+  updateNavAuth();
+</script>
+</body>
+</html>

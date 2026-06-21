@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora — Next-gen Tech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'sans-serif'] },
+        boxShadow: {
+          'card': '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
+          'card-hover': '0 4px 12px rgba(0,0,0,0.06), 0 16px 32px rgba(0,0,0,0.10)',
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="font-sans bg-[#f7f7f9]">
+
+<!-- ───────────────────────────────
+     NAVBAR — dark, sticky
+─────────────────────────────── -->
+<nav class="bg-[#0a0a0a] sticky top-0 z-50 border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="index.html" class="text-white text-xl font-extrabold tracking-tight">
+      NEX<span class="text-indigo-500">ORA</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-8 text-[13px] font-medium text-gray-400">
+      <a href="index.html" class="hover:text-white transition-colors">Home</a>
+      <a href="index.html?category=Laptops" class="hover:text-white transition-colors">Laptops</a>
+      <a href="index.html?category=Phones" class="hover:text-white transition-colors">Phones</a>
+      <a href="index.html?category=Tablets" class="hover:text-white transition-colors">Tablets</a>
+      <a href="index.html?category=Accessories" class="hover:text-white transition-colors">Accessories</a>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <a href="cart.html" class="relative w-9 h-9 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white">
+        <i class="ti ti-shopping-cart text-[18px]"></i>
+        <span id="cart-count" class="absolute -top-1 -right-1 bg-indigo-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">0</span>
+      </a>
+      <a href="orders.html" class="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white">
+        <i class="ti ti-package text-[18px]"></i>
+      </a>
+      <a href="login.html" id="nav-auth-link" class="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white">
+        <i class="ti ti-user text-[18px]"></i>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ───────────────────────────────
+     HERO — dark, bold type
+─────────────────────────────── -->
+<section class="bg-[#0a0a0a] text-center pt-16 pb-24 px-6">
+  <span class="inline-flex items-center gap-1.5 bg-indigo-500/10 text-indigo-400 text-xs font-medium px-3 py-1.5 rounded-full border border-indigo-500/20 mb-6">
+    <i class="ti ti-sparkles text-sm"></i> New arrivals 2026
+  </span>
+  <h1 class="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.05] mb-5">
+    Next-gen tech,<br><span class="text-indigo-500">delivered fast</span>
+  </h1>
+  <p class="text-gray-400 text-base md:text-lg mb-9 max-w-xl mx-auto">
+    Laptops, phones, tablets and accessories — curated, tested, and ready to ship.
+  </p>
+  <div class="flex items-center justify-center gap-3">
+    <a href="#products" class="bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-semibold px-7 py-3.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20">
+      Shop now
+    </a>
+    <a href="#products" onclick="filterFeatured()" class="bg-white/10 hover:bg-white/15 text-white text-sm font-medium px-7 py-3.5 rounded-xl border border-white/10 transition-colors">
+      View deals
+    </a>
+  </div>
+</section>
+
+<!-- ───────────────────────────────
+     SEARCH + FILTERS — floating card over hero edge
+─────────────────────────────── -->
+<section class="max-w-7xl mx-auto px-6 -mt-8 relative z-10">
+  <div class="bg-white rounded-2xl shadow-card p-3 flex flex-col md:flex-row gap-3 items-stretch md:items-center">
+    <div class="relative flex-1">
+      <i class="ti ti-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]"></i>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Search laptops, phones, accessories..."
+        class="w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 border-0 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder:text-gray-400"
+      >
+    </div>
+    <div class="flex gap-2 overflow-x-auto" id="category-filters">
+      <button data-category="" class="cat-btn px-4 py-3 rounded-xl text-sm font-semibold bg-gray-900 text-white whitespace-nowrap transition-colors">All</button>
+      <button data-category="Laptops" class="cat-btn px-4 py-3 rounded-xl text-sm font-medium bg-gray-50 text-gray-600 whitespace-nowrap hover:bg-gray-100 transition-colors">Laptops</button>
+      <button data-category="Phones" class="cat-btn px-4 py-3 rounded-xl text-sm font-medium bg-gray-50 text-gray-600 whitespace-nowrap hover:bg-gray-100 transition-colors">Phones</button>
+      <button data-category="Tablets" class="cat-btn px-4 py-3 rounded-xl text-sm font-medium bg-gray-50 text-gray-600 whitespace-nowrap hover:bg-gray-100 transition-colors">Tablets</button>
+      <button data-category="Accessories" class="cat-btn px-4 py-3 rounded-xl text-sm font-medium bg-gray-50 text-gray-600 whitespace-nowrap hover:bg-gray-100 transition-colors">Accessories</button>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────────────
+     PRODUCT GRID
+─────────────────────────────── -->
+<section id="products" class="max-w-7xl mx-auto px-6 pt-14 pb-24">
+  <div class="flex items-end justify-between mb-7">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Browse products</h2>
+      <p class="text-sm text-gray-500 mt-1" id="result-count">Loading...</p>
+    </div>
+  </div>
+
+  <div id="loading-state" class="flex justify-center py-24">
+    <div class="spinner"></div>
+  </div>
+
+  <div id="empty-state" class="hidden text-center py-24 text-gray-500">
+    <i class="ti ti-package-off text-5xl mb-3 text-gray-300"></i>
+    <p class="font-medium">No products found</p>
+    <p class="text-sm text-gray-400 mt-1">Try a different search or category</p>
+  </div>
+
+  <div id="error-state" class="hidden text-center py-24 text-gray-500">
+    <i class="ti ti-alert-circle text-5xl mb-3 text-red-300"></i>
+    <p id="error-message" class="font-medium text-gray-900">Could not load products</p>
+    <button type="button" onclick="loadProducts()" class="mt-4 text-indigo-500 hover:text-indigo-600 text-sm font-semibold">Try again</button>
+  </div>
+
+  <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+</section>
+
+<!-- ───────────────────────────────
+     FOOTER
+─────────────────────────────── -->
+<footer class="bg-[#0a0a0a] text-gray-400 py-12 px-6">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <p class="text-white font-extrabold text-lg">NEX<span class="text-indigo-500">ORA</span></p>
+    <p class="text-sm">&copy; 2026 Nexora. Built as a portfolio project by Prasad.</p>
+  </div>
+</footer>
+
+<div id="chat-widget-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/chat.js"></script>
+<script>
+  let activeCategory = "";
+  let showFeaturedOnly = false;
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('category')) activeCategory = params.get('category');
+  if (params.get('featured')) showFeaturedOnly = true;
+
+  function filterFeatured() {
+    showFeaturedOnly = true;
+    loadProducts();
+  }
+
+  async function loadProducts() {
+    const loadingState = document.getElementById('loading-state');
+    const emptyState = document.getElementById('empty-state');
+    const errorState = document.getElementById('error-state');
+    const grid = document.getElementById('product-grid');
+    const resultCount = document.getElementById('result-count');
+
+    loadingState.classList.remove('hidden');
+    emptyState.classList.add('hidden');
+    errorState.classList.add('hidden');
+    grid.innerHTML = '';
+
+    try {
+      const searchTerm = document.getElementById('search-input').value.trim();
+      const products = await getProducts({
+        search: searchTerm || undefined,
+        category: activeCategory || undefined,
+        featured: showFeaturedOnly ? true : undefined,
+      });
+
+      loadingState.classList.add('hidden');
+      resultCount.textContent = `${products.length} product${products.length !== 1 ? 's' : ''} found`;
+
+      if (products.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      grid.innerHTML = products.map(renderProductCard).join('');
+    } catch (err) {
+      loadingState.classList.add('hidden');
+      resultCount.textContent = 'Could not load products';
+      document.getElementById('error-message').textContent = err.message || 'Could not load products';
+      errorState.classList.remove('hidden');
+    }
+  }
+
+  function renderProductCard(p) {
+    const discount = p.old_price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : null;
+    return `
+      <div class="group bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-shadow duration-300 overflow-hidden">
+        <a href="product.html?id=${p.id}" class="block relative aspect-square bg-gray-50 overflow-hidden">
+          <img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+          ${p.is_featured ? `<span class="absolute top-3 left-3 bg-indigo-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Featured</span>` : ''}
+          ${discount ? `<span class="absolute top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">-${discount}%</span>` : ''}
+          <button onclick="event.preventDefault(); quickAdd(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price})"
+            class="absolute bottom-0 left-0 right-0 bg-gray-900 text-white text-xs font-semibold py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-center gap-1.5">
+            <i class="ti ti-shopping-cart-plus text-sm"></i> Quick add
+          </button>
+        </a>
+        <a href="product.html?id=${p.id}" class="block p-4">
+          <p class="text-[11px] text-gray-400 font-medium mb-1 uppercase tracking-wide">${p.brand}</p>
+          <h3 class="text-sm font-semibold text-gray-900 mb-2 line-clamp-1">${p.name}</h3>
+          <div class="flex items-center gap-1 mb-2">
+            <i class="ti ti-star-filled text-amber-400 text-xs"></i>
+            <span class="text-xs text-gray-600 font-medium">${p.rating}</span>
+            <span class="text-xs text-gray-300">·</span>
+            <span class="text-xs ${p.stock > 0 ? 'text-green-600' : 'text-red-500'}">${p.stock > 0 ? 'In stock' : 'Out of stock'}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[15px] font-bold text-gray-900">₹${p.price.toLocaleString('en-IN')}</span>
+            ${p.old_price ? `<span class="text-xs text-gray-400 line-through">₹${p.old_price.toLocaleString('en-IN')}</span>` : ''}
+          </div>
+        </a>
+      </div>
+    `;
+  }
+
+  function quickAdd(id, name, price) {
+    addToCart({ id, name, price, quantity: 1 });
+    showToast(`${name} added to cart`);
+  }
+
+  function showToast(message) {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
+
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    if (btn.dataset.category === activeCategory) {
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        b.classList.remove('bg-gray-900', 'text-white', 'font-semibold');
+        b.classList.add('bg-gray-50', 'text-gray-600', 'font-medium');
+      });
+      btn.classList.remove('bg-gray-50', 'text-gray-600', 'font-medium');
+      btn.classList.add('bg-gray-900', 'text-white', 'font-semibold');
+    }
+    btn.addEventListener('click', () => {
+      activeCategory = btn.dataset.category;
+      showFeaturedOnly = false;
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        b.classList.remove('bg-gray-900', 'text-white', 'font-semibold');
+        b.classList.add('bg-gray-50', 'text-gray-600', 'font-medium');
+      });
+      btn.classList.remove('bg-gray-50', 'text-gray-600', 'font-medium');
+      btn.classList.add('bg-gray-900', 'text-white', 'font-semibold');
+      loadProducts();
+    });
+  });
+
+  let searchTimeout;
+  document.getElementById('search-input').addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(loadProducts, 400);
+  });
+
+  loadProducts();
+  if (typeof updateCartCount === 'function') updateCartCount();
+</script>
+</body>
+</html>
