@@ -2,7 +2,7 @@
 
 A full-stack e-commerce application for electronics, built as a portfolio project to demonstrate full-stack development and AI integration skills as part of a transition into AI/ML engineering roles.
 
-**Live demo:** _add your deployed link here once hosted_
+**Live demo:** 
 
 ---
 
