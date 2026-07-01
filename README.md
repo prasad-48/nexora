@@ -109,8 +109,8 @@ Open `frontend/index.html` with a local server (e.g. VS Code's Live Server exten
 - Debugging real-world issues: CORS, trailing-slash redirects stripping auth headers, global scope collisions between scripts, bcrypt version compatibility
 - Structuring a project for maintainability with environment-based configuration and clear separation between routers, models, and schemas
 
----
+--
 
-## Project status
+# Project status
 
 Built as a learning project while transitioning into AI/ML engineering roles. Feedback welcome!
