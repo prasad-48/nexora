@@ -10,3 +10,5 @@ bcrypt==5.0.0
 python-multipart==0.0.30
 google-generativeai
 httpx==0.28.1
+razorpay
+email-validator
