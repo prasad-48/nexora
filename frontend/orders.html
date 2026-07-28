@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders & Tracker — Nexora AI Store</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-[#070913] text-[#f0f4fc]">
+
+<nav class="nav-futuristic sticky top-0 z-50 px-6 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-2xl font-extrabold tracking-wider">
+      <span class="gradient-text font-black">NEXORA</span>
+      <span class="badge-neon badge-cyan text-[10px]">AI STORE</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+      <a href="index.html" class="hover:text-cyan-400 transition-colors">Home</a>
+      <a href="index.html?category=Laptops" class="hover:text-cyan-400 transition-colors">Laptops</a>
+      <a href="index.html?category=Smartphones" class="hover:text-cyan-400 transition-colors">Phones</a>
+      <a href="index.html?category=Audio" class="hover:text-cyan-400 transition-colors">Audio</a>
+      <a href="index.html?category=Displays" class="hover:text-cyan-400 transition-colors">Displays</a>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <a href="cart.html" class="relative p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/40 text-gray-200 hover:text-cyan-400 transition-all">
+        <i class="ti ti-shopping-cart text-lg"></i>
+        <span id="cart-count" class="absolute -top-1 -right-1 bg-gradient-to-r from-cyan-500 to-purple-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow-lg">0</span>
+      </a>
+      <div id="nav-auth-container"></div>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-4xl mx-auto px-6 py-12 pb-24">
+  <h1 class="text-3xl font-extrabold text-white mb-8 tracking-wide">My Orders & Real-time Tracker</h1>
+
+  <!-- Sign In Guard -->
+  <div id="login-prompt" class="hidden glass-panel text-center py-20 px-6 max-w-xl mx-auto">
+    <i class="ti ti-lock text-6xl text-purple-500/40 mb-4 inline-block"></i>
+    <h2 class="text-2xl font-bold text-white mb-2">Authentication Required</h2>
+    <p class="text-sm text-gray-400 mb-8">Please sign in to view your order history and track active shipments.</p>
+    <a href="login.html" class="glow-btn-primary px-8 py-3 text-sm font-bold">
+      <i class="ti ti-login"></i> Sign In to Account
+    </a>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div id="loading-state" class="hidden flex flex-col items-center justify-center py-24 space-y-4">
+    <div class="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+    <p class="text-xs text-cyan-400 font-semibold uppercase tracking-wider">Fetching Orders History...</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="error-state" class="hidden glass-panel text-center py-16 px-6 text-rose-400">
+    <p id="error-message" class="text-sm font-bold text-white mb-4"></p>
+    <button type="button" onclick="loadOrders()" class="glow-btn-primary px-6 py-2.5 text-xs font-bold">
+      <i class="ti ti-refresh"></i> Retry Sync
+    </button>
+  </div>
+
+  <!-- Empty Orders State -->
+  <div id="empty-state" class="hidden glass-panel text-center py-20 px-6 max-w-xl mx-auto">
+    <i class="ti ti-package-off text-6xl text-cyan-500/40 mb-4 inline-block"></i>
+    <h2 class="text-2xl font-bold text-white mb-2">No Orders Placed Yet</h2>
+    <p class="text-sm text-gray-400 mb-8">Explore our futuristic catalog and place your first hardware order.</p>
+    <a href="index.html" class="glow-btn-primary px-8 py-3 text-sm font-bold">
+      <i class="ti ti-bolt"></i> Explore Catalog
+    </a>
+  </div>
+
+  <!-- Orders Timeline List -->
+  <div id="orders-list" class="hidden space-y-6"></div>
+</main>
+
+<footer class="border-t border-white/10 bg-[#05070e] py-12 px-6">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+    <div>
+      <span class="gradient-text font-black text-xl">NEXORA</span>
+      <p class="text-xs text-gray-500 mt-1">Next-Generation E-Commerce Architecture & AI Assistant</p>
+    </div>
+    <p class="text-xs text-gray-500">&copy; 2026 Nexora Electronics. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<div id="chat-widget-container"></div>
+<div id="toast-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/chat.js"></script>
+<script>
+  function formatPrice(amount) {
+    return '₹' + amount.toLocaleString('en-IN');
+  }
+
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  function statusBadge(status) {
+    const styles = {
+      pending: 'badge-purple',
+      processing: 'badge-cyan',
+      shipped: 'badge-cyan',
+      delivered: 'badge-green',
+      cancelled: 'badge-red',
+    };
+    const cls = styles[status] || 'badge-purple';
+    return `<span class="badge-neon ${cls} uppercase text-[10px] font-bold">${status}</span>`;
+  }
+
+  function renderTrackerProgress(status) {
+    if (status === 'cancelled') {
+      return `
+        <div class="glass-panel-static p-4 border border-rose-500/30 text-rose-400 text-xs font-semibold text-center rounded-xl my-4">
+          ❌ Order Cancelled
+        </div>
+      `;
+    }
+
+    const steps = ['pending', 'processing', 'shipped', 'delivered'];
+    const currentIndex = steps.indexOf(status.toLowerCase());
+
+    return `
+      <div class="my-6">
+        <div class="flex items-center justify-between relative">
+          <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-white/10 z-0"></div>
+          
+          <div class="relative z-10 flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentIndex >= 0 ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/50' : 'bg-slate-900 text-gray-500 border border-white/10'}">
+              <i class="ti ti-check text-sm"></i>
+            </div>
+            <span class="text-[10px] font-semibold text-gray-300 mt-2">Placed</span>
+          </div>
+
+          <div class="relative z-10 flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentIndex >= 1 ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/50' : 'bg-slate-900 text-gray-500 border border-white/10'}">
+              <i class="ti ti-cpu text-sm"></i>
+            </div>
+            <span class="text-[10px] font-semibold text-gray-300 mt-2">Processing</span>
+          </div>
+
+          <div class="relative z-10 flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentIndex >= 2 ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/50' : 'bg-slate-900 text-gray-500 border border-white/10'}">
+              <i class="ti ti-truck text-sm"></i>
+            </div>
+            <span class="text-[10px] font-semibold text-gray-300 mt-2">Shipped</span>
+          </div>
+
+          <div class="relative z-10 flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentIndex >= 3 ? 'bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-400/50' : 'bg-slate-900 text-gray-500 border border-white/10'}">
+              <i class="ti ti-package-export text-sm"></i>
+            </div>
+            <span class="text-[10px] font-semibold text-gray-300 mt-2">Delivered</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderOrderItem(item) {
+    const name = item.product ? item.product.name : `Product #${item.product_id}`;
+    const lineTotal = item.price * item.quantity;
+    const img = (item.product && item.product.image_url) ? item.product.image_url : 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=100';
+
+    return `
+      <div class="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+        <div class="flex items-center gap-3">
+          <img src="${img}" class="w-12 h-12 object-contain bg-slate-950 p-1 rounded-lg border border-white/10">
+          <div>
+            <p class="text-sm font-bold text-white">${name}</p>
+            <p class="text-xs text-cyan-400">Qty: ${item.quantity} × ${formatPrice(item.price)}</p>
+          </div>
+        </div>
+        <span class="text-sm font-extrabold text-white">${formatPrice(lineTotal)}</span>
+      </div>
+    `;
+  }
+
+  function renderOrder(order) {
+    const items = order.order_items || [];
+    const itemsHtml = items.map(renderOrderItem).join('');
+    return `
+      <div class="glass-panel p-6 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div>
+            <div class="flex items-center gap-3">
+              <h3 class="text-base font-extrabold text-white">Order #ORD-${order.id}</h3>
+              ${statusBadge(order.status)}
+            </div>
+            <p class="text-xs text-gray-400 mt-1"><i class="ti ti-calendar"></i> Placed on ${formatDate(order.created_at)}</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-gray-400 block">Total Amount</span>
+            <span class="text-lg font-black gradient-text">${formatPrice(order.total_amount)}</span>
+          </div>
+        </div>
+
+        ${renderTrackerProgress(order.status)}
+
+        <div class="glass-panel-static p-4 rounded-xl mt-4">
+          <p class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-2">Order Items</p>
+          <div>${itemsHtml}</div>
+          ${order.address ? `<div class="mt-4 pt-3 border-t border-white/10 text-xs text-gray-400"><i class="ti ti-map-pin text-cyan-400"></i> Shipping Address: <span class="text-white">${order.address}</span></div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function hideAllStates() {
+    document.getElementById('login-prompt').classList.add('hidden');
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('error-state').classList.add('hidden');
+    document.getElementById('empty-state').classList.add('hidden');
+    document.getElementById('orders-list').classList.add('hidden');
+  }
+
+  async function loadOrders() {
+    if (!isLoggedIn()) {
+      hideAllStates();
+      document.getElementById('login-prompt').classList.remove('hidden');
+      return;
+    }
+
+    hideAllStates();
+    document.getElementById('loading-state').classList.remove('hidden');
+
+    try {
+      const orders = await getMyOrders();
+      document.getElementById('loading-state').classList.add('hidden');
+
+      if (orders.length === 0) {
+        document.getElementById('empty-state').classList.remove('hidden');
+        return;
+      }
+
+      const list = document.getElementById('orders-list');
+      list.innerHTML = orders.map(renderOrder).join('');
+      list.classList.remove('hidden');
+    } catch (err) {
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('error-message').textContent = err.message || 'Could not fetch order history.';
+      document.getElementById('error-state').classList.remove('hidden');
+    }
+  }
+
+  loadOrders();
+</script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In / Register — Nexora AI Store</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-[#070913] text-[#f0f4fc]">
+
+<nav class="nav-futuristic sticky top-0 z-50 px-6 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-2xl font-extrabold tracking-wider">
+      <span class="gradient-text font-black">NEXORA</span>
+      <span class="badge-neon badge-cyan text-[10px]">AI STORE</span>
+    </a>
+
+    <div class="flex items-center gap-4">
+      <a href="cart.html" class="relative p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/40 text-gray-200 hover:text-cyan-400 transition-all">
+        <i class="ti ti-shopping-cart text-lg"></i>
+        <span id="cart-count" class="absolute -top-1 -right-1 bg-gradient-to-r from-cyan-500 to-purple-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow-lg">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-md mx-auto px-6 py-16">
+  <div id="expired-banner" class="hidden mb-6 px-4 py-3 rounded-xl glass-panel-static border border-amber-500/30 text-amber-300 text-xs text-center">
+    ⚠️ Session expired. Please sign in again to access your account.
+  </div>
+
+  <div class="glass-panel p-8 shadow-2xl">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-extrabold text-white">Nexora Account</h1>
+      <p class="text-xs text-cyan-400 mt-2">Sign in or create an account to unlock your personalized AI Assistant</p>
+    </div>
+
+    <!-- Mode Tabs -->
+    <div class="flex rounded-xl bg-slate-950 p-1.5 mb-8 border border-white/10">
+      <button type="button" id="tab-login" class="flex-1 py-2.5 text-xs font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-purple-600 text-white shadow-lg transition-all">
+        Sign In
+      </button>
+      <button type="button" id="tab-register" class="flex-1 py-2.5 text-xs font-medium rounded-lg text-gray-400 hover:text-white transition-all">
+        Register
+      </button>
+    </div>
+
+    <div id="form-error" class="hidden mb-6 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold"></div>
+
+    <!-- Login Form -->
+    <form id="login-form" class="space-y-5">
+      <div>
+        <label for="login-email" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">Email Address</label>
+        <input type="email" id="login-email" required
+          class="input-futuristic text-xs"
+          placeholder="user@example.com">
+      </div>
+      <div>
+        <label for="login-password" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">Password</label>
+        <input type="password" id="login-password" required
+          class="input-futuristic text-xs"
+          placeholder="••••••••">
+      </div>
+      <button type="submit" id="login-submit" class="glow-btn-primary w-full py-3.5 text-xs font-bold">
+        <span id="login-submit-text">Sign In</span>
+        <span id="login-spinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+      </button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="register-form" class="space-y-5 hidden">
+      <div>
+        <label for="register-name" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">Full Name</label>
+        <input type="text" id="register-name" required
+          class="input-futuristic text-xs"
+          placeholder="Alex Mercer">
+      </div>
+      <div>
+        <label for="register-email" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">Email Address</label>
+        <input type="email" id="register-email" required
+          class="input-futuristic text-xs"
+          placeholder="alex@example.com">
+      </div>
+      <div>
+        <label for="register-password" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">Password</label>
+        <input type="password" id="register-password" required minlength="6"
+          class="input-futuristic text-xs"
+          placeholder="At least 6 characters">
+      </div>
+      <button type="submit" id="register-submit" class="glow-btn-primary w-full py-3.5 text-xs font-bold">
+        <span id="register-submit-text">Create Account</span>
+        <span id="register-spinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+      </button>
+    </form>
+  </div>
+</main>
+
+<footer class="border-t border-white/10 bg-[#05070e] py-12 px-6">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+    <div>
+      <span class="gradient-text font-black text-xl">NEXORA</span>
+      <p class="text-xs text-gray-500 mt-1">Next-Generation E-Commerce Architecture & AI Assistant</p>
+    </div>
+    <p class="text-xs text-gray-500">&copy; 2026 Nexora Electronics. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<div id="toast-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script>
+  if (isLoggedIn()) {
+    window.location.href = 'index.html';
+  }
+
+  if (new URLSearchParams(window.location.search).get('expired') === 'true') {
+    document.getElementById('expired-banner').classList.remove('hidden');
+  }
+
+  const tabLogin = document.getElementById('tab-login');
+  const tabRegister = document.getElementById('tab-register');
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  const formError = document.getElementById('form-error');
+
+  function showError(message) {
+    formError.textContent = message;
+    formError.classList.remove('hidden');
+  }
+
+  function hideError() {
+    formError.classList.add('hidden');
+    formError.textContent = '';
+  }
+
+  function switchToLogin() {
+    hideError();
+    tabLogin.className = 'flex-1 py-2.5 text-xs font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-purple-600 text-white shadow-lg transition-all';
+    tabRegister.className = 'flex-1 py-2.5 text-xs font-medium rounded-lg text-gray-400 hover:text-white transition-all';
+    loginForm.classList.remove('hidden');
+    registerForm.classList.add('hidden');
+  }
+
+  function switchToRegister() {
+    hideError();
+    tabRegister.className = 'flex-1 py-2.5 text-xs font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-purple-600 text-white shadow-lg transition-all';
+    tabLogin.className = 'flex-1 py-2.5 text-xs font-medium rounded-lg text-gray-400 hover:text-white transition-all';
+    registerForm.classList.remove('hidden');
+    loginForm.classList.add('hidden');
+  }
+
+  tabLogin.addEventListener('click', switchToLogin);
+  tabRegister.addEventListener('click', switchToRegister);
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+
+    const btn = document.getElementById('login-submit');
+    const spinner = document.getElementById('login-spinner');
+    const btnText = document.getElementById('login-submit-text');
+
+    btn.disabled = true;
+    spinner.classList.remove('hidden');
+    btnText.textContent = 'Verifying credentials...';
+
+    try {
+      await loginUser(
+        document.getElementById('login-email').value.trim(),
+        document.getElementById('login-password').value
+      );
+      window.location.href = 'index.html';
+    } catch (err) {
+      showError(err.message || 'Login failed. Please verify credentials.');
+      btn.disabled = false;
+      spinner.classList.add('hidden');
+      btnText.textContent = 'Sign In';
+    }
+  });
+
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+
+    const btn = document.getElementById('register-submit');
+    const spinner = document.getElementById('register-spinner');
+    const btnText = document.getElementById('register-submit-text');
+
+    btn.disabled = true;
+    spinner.classList.remove('hidden');
+    btnText.textContent = 'Creating Account...';
+
+    try {
+      await registerUser(
+        document.getElementById('register-name').value.trim(),
+        document.getElementById('register-email').value.trim(),
+        document.getElementById('register-password').value
+      );
+      window.location.href = 'index.html';
+    } catch (err) {
+      showError(err.message || 'Registration failed.');
+      btn.disabled = false;
+      spinner.classList.add('hidden');
+      btnText.textContent = 'Create Account';
+    }
+  });
+</script>
+</body>
+</html>

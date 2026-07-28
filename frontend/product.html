@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details — Nexora AI Store</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-[#070913] text-[#f0f4fc]">
+
+<nav class="nav-futuristic sticky top-0 z-50 px-6 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-2xl font-extrabold tracking-wider">
+      <span class="gradient-text font-black">NEXORA</span>
+      <span class="badge-neon badge-cyan text-[10px]">AI STORE</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+      <a href="index.html" class="hover:text-cyan-400 transition-colors">Home</a>
+      <a href="index.html?category=Laptops" class="hover:text-cyan-400 transition-colors">Laptops</a>
+      <a href="index.html?category=Smartphones" class="hover:text-cyan-400 transition-colors">Phones</a>
+      <a href="index.html?category=Audio" class="hover:text-cyan-400 transition-colors">Audio</a>
+      <a href="index.html?category=Displays" class="hover:text-cyan-400 transition-colors">Displays</a>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <a href="cart.html" class="relative p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/40 text-gray-200 hover:text-cyan-400 transition-all">
+        <i class="ti ti-shopping-cart text-lg"></i>
+        <span id="cart-count" class="absolute -top-1 -right-1 bg-gradient-to-r from-cyan-500 to-purple-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow-lg">0</span>
+      </a>
+      <div id="nav-auth-container"></div>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-6 py-12 pb-24">
+  <!-- Loading State -->
+  <div id="loading-state" class="flex flex-col items-center justify-center py-32 space-y-4">
+    <div class="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+    <p class="text-sm text-cyan-400 font-semibold tracking-wider uppercase">Loading Product Specs...</p>
+  </div>
+
+  <!-- Not Found State -->
+  <div id="not-found-state" class="hidden glass-panel text-center py-20 px-6 max-w-xl mx-auto">
+    <i class="ti ti-package-off text-6xl text-rose-500/40 mb-4 inline-block"></i>
+    <h2 class="text-2xl font-bold text-white mb-2">Product Not Found</h2>
+    <p class="text-sm text-gray-400 mb-8">The requested hardware specification could not be located in our inventory.</p>
+    <a href="index.html" class="glow-btn-primary px-8 py-3 text-sm">
+      <i class="ti ti-arrow-left"></i> Return to Store
+    </a>
+  </div>
+
+  <!-- Product Content View -->
+  <div id="product-content" class="hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+      <!-- Left Column: Product Image -->
+      <div class="glass-panel p-8 flex items-center justify-center relative group">
+        <div class="w-full aspect-square bg-slate-950/80 rounded-2xl overflow-hidden p-6 flex items-center justify-center">
+          <img id="product-image" src="" alt="" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+        </div>
+      </div>
+
+      <!-- Right Column: Specs & Purchase Actions -->
+      <div class="flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <span id="product-brand" class="badge-neon badge-cyan"></span>
+            <span id="product-category-badge" class="badge-neon badge-purple"></span>
+          </div>
+
+          <h1 id="product-name" class="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight"></h1>
+
+          <div class="flex items-center gap-4 mb-6 text-sm">
+            <div class="flex items-center gap-1 text-amber-400 font-bold">
+              <i class="ti ti-star-filled"></i>
+              <span id="product-rating"></span>
+            </div>
+            <span class="text-gray-600">|</span>
+            <span id="product-stock" class="font-semibold"></span>
+          </div>
+
+          <div class="glass-panel-static p-6 mb-6">
+            <div class="flex items-baseline gap-4 mb-2">
+              <span id="product-price" class="text-3xl font-black text-white"></span>
+              <span id="product-old-price" class="text-base text-gray-500 line-through hidden"></span>
+              <span id="product-discount" class="hidden badge-neon badge-red text-xs"></span>
+            </div>
+            <p class="text-xs text-cyan-400"><i class="ti ti-truck text-sm"></i> Free Express Delivery & 1-Year Warranty Included</p>
+          </div>
+
+          <p id="product-description" class="text-gray-300 text-sm leading-relaxed mb-8"></p>
+
+          <!-- Quantity Selector -->
+          <div class="flex items-center gap-4 mb-8">
+            <span class="text-sm font-semibold text-gray-300">Quantity:</span>
+            <div class="flex items-center glass-panel-static border border-white/10 rounded-xl">
+              <button type="button" id="qty-minus" class="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-l-xl">
+                <i class="ti ti-minus text-xs"></i>
+              </button>
+              <span id="qty-value" class="w-12 text-center text-sm font-bold text-white">1</span>
+              <button type="button" id="qty-plus" class="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-r-xl">
+                <i class="ti ti-plus text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button type="button" id="add-to-cart-btn" class="glow-btn-primary flex-1 py-3.5 text-sm font-bold">
+            <i class="ti ti-shopping-cart-plus text-lg"></i> Add to Cart
+          </button>
+          <button type="button" id="buy-now-btn" class="glow-btn-secondary flex-1 py-3.5 text-sm font-bold">
+            <i class="ti ti-bolt text-lg text-cyan-400"></i> Buy Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    <section>
+      <h2 class="text-2xl font-bold text-white mb-6 tracking-wide">You Might Also Like</h2>
+      <div id="related-loading" class="flex justify-center py-12">
+        <div class="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+      <div id="related-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="border-t border-white/10 bg-[#05070e] py-12 px-6">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+    <div>
+      <span class="gradient-text font-black text-xl">NEXORA</span>
+      <p class="text-xs text-gray-500 mt-1">Next-Generation E-Commerce Architecture & AI Assistant</p>
+    </div>
+    <p class="text-xs text-gray-500">&copy; 2026 Nexora Electronics. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<div id="chat-widget-container"></div>
+<div id="toast-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/chat.js"></script>
+<script>
+  let currentProduct = null;
+  let quantity = 1;
+
+  const params = new URLSearchParams(window.location.search);
+  const rawProductId = params.get('id');
+  const productId = rawProductId && /^\d+$/.test(rawProductId) ? rawProductId : null;
+
+  function formatPrice(amount) {
+    return '₹' + amount.toLocaleString('en-IN');
+  }
+
+  function renderRelatedCard(p) {
+    return `
+      <div class="glass-panel group overflow-hidden flex flex-col justify-between">
+        <a href="product.html?id=${p.id}" class="aspect-square bg-slate-950/60 p-4 flex items-center justify-center">
+          <img src="${p.image_url || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=500'}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+        </a>
+        <div class="p-4">
+          <p class="text-[10px] text-cyan-400 uppercase font-bold tracking-wider mb-1">${p.brand}</p>
+          <a href="product.html?id=${p.id}" class="hover:text-cyan-400 transition-colors">
+            <h4 class="text-sm font-bold text-white line-clamp-1 mb-2">${p.name}</h4>
+          </a>
+          <span class="text-base font-bold text-white">${formatPrice(p.price)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderProduct(p) {
+    currentProduct = p;
+    document.title = `${p.name} — Nexora AI Store`;
+
+    document.getElementById('product-image').src = p.image_url || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=500';
+    document.getElementById('product-image').alt = p.name;
+    document.getElementById('product-brand').textContent = p.brand;
+    document.getElementById('product-category-badge').textContent = p.category;
+    document.getElementById('product-name').textContent = p.name;
+    document.getElementById('product-rating').textContent = `${p.rating} Rating`;
+
+    const stockEl = document.getElementById('product-stock');
+    stockEl.textContent = p.stock > 0 ? `In Stock (${p.stock} units available)` : 'Out of Stock';
+    stockEl.className = `text-sm font-semibold ${p.stock > 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+    document.getElementById('product-price').textContent = formatPrice(p.price);
+
+    const oldPriceEl = document.getElementById('product-old-price');
+    const discountEl = document.getElementById('product-discount');
+    if (p.old_price) {
+      const discount = Math.round(((p.old_price - p.price) / p.old_price) * 100);
+      oldPriceEl.textContent = formatPrice(p.old_price);
+      oldPriceEl.classList.remove('hidden');
+      discountEl.textContent = `-${discount}% OFF`;
+      discountEl.classList.remove('hidden');
+    }
+
+    document.getElementById('product-description').textContent = p.description;
+
+    const addBtn = document.getElementById('add-to-cart-btn');
+    const buyBtn = document.getElementById('buy-now-btn');
+    if (p.stock <= 0) {
+      addBtn.disabled = true;
+      buyBtn.disabled = true;
+      addBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      buyBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+  }
+
+  async function loadRelated(category, excludeId) {
+    const relatedLoading = document.getElementById('related-loading');
+    const relatedGrid = document.getElementById('related-grid');
+
+    try {
+      const products = await getProducts({ category });
+      relatedLoading.classList.add('hidden');
+      const related = products.filter((p) => p.id !== excludeId).slice(0, 4);
+      if (related.length === 0) {
+        relatedGrid.innerHTML = '<p class="text-sm text-gray-500 col-span-full">No related products found.</p>';
+        return;
+      }
+      relatedGrid.innerHTML = related.map(renderRelatedCard).join('');
+    } catch (err) {
+      relatedLoading.classList.add('hidden');
+      relatedGrid.innerHTML = '<p class="text-sm text-rose-400 col-span-full">Could not load related products.</p>';
+    }
+  }
+
+  async function loadProduct() {
+    const loading = document.getElementById('loading-state');
+    const notFound = document.getElementById('not-found-state');
+    const content = document.getElementById('product-content');
+
+    if (!productId) {
+      loading.classList.add('hidden');
+      notFound.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      const product = await getProduct(productId);
+      loading.classList.add('hidden');
+      content.classList.remove('hidden');
+      renderProduct(product);
+      loadRelated(product.category, product.id);
+    } catch (err) {
+      loading.classList.add('hidden');
+      notFound.classList.remove('hidden');
+    }
+  }
+
+  document.getElementById('qty-minus').addEventListener('click', () => {
+    if (quantity > 1) {
+      quantity--;
+      document.getElementById('qty-value').textContent = quantity;
+    }
+  });
+
+  document.getElementById('qty-plus').addEventListener('click', () => {
+    if (currentProduct && quantity < currentProduct.stock) {
+      quantity++;
+      document.getElementById('qty-value').textContent = quantity;
+    }
+  });
+
+  document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+    if (!currentProduct) return;
+    addToCart({
+      id: currentProduct.id,
+      name: currentProduct.name,
+      price: currentProduct.price,
+      image_url: currentProduct.image_url,
+      quantity,
+    });
+  });
+
+  document.getElementById('buy-now-btn').addEventListener('click', async () => {
+    if (!currentProduct) return;
+    await addToCart({
+      id: currentProduct.id,
+      name: currentProduct.name,
+      price: currentProduct.price,
+      image_url: currentProduct.image_url,
+      quantity,
+    });
+    window.location.href = 'cart.html';
+  });
+
+  loadProduct();
+</script>
+</body>
+</html>

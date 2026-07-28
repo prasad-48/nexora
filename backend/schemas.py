@@ -1,0 +1,178 @@
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, List
+from datetime import datetime
+
+
+# ─────────────────────────────────────────
+# USER SCHEMAS
+# ─────────────────────────────────────────
+
+class UserCreate(BaseModel):
+    """Used when someone registers"""
+    full_name: str
+    email: EmailStr        # automatically validates email format
+    password: str
+
+class UserLogin(BaseModel):
+    """Used when someone logs in"""
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    """What we send back — notice no password!"""
+    id: int
+    full_name: str
+    email: str
+    is_admin: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True  # allows reading from database objects
+
+
+# ─────────────────────────────────────────
+# TOKEN SCHEMAS
+# ─────────────────────────────────────────
+
+class Token(BaseModel):
+    """Returned after successful login"""
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    """Data stored inside the JWT token"""
+    email: Optional[str] = None
+
+
+# ─────────────────────────────────────────
+# PRODUCT SCHEMAS
+# ─────────────────────────────────────────
+
+class ProductCreate(BaseModel):
+    """Used when adding a new product"""
+    name: str
+    brand: str
+    category: str
+    description: str
+    price: float
+    old_price: Optional[float] = None
+    image_url: Optional[str] = None
+    stock: int
+    rating: Optional[float] = 0.0
+    is_featured: Optional[bool] = False
+
+class ProductResponse(BaseModel):
+    """What we send back for a product"""
+    id: int
+    name: str
+    brand: str
+    category: str
+    description: str
+    price: float
+    old_price: Optional[float] = None
+    image_url: Optional[str] = None
+    stock: int
+    rating: float
+    is_featured: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ─────────────────────────────────────────
+# CART SCHEMAS
+# ─────────────────────────────────────────
+
+class CartItemCreate(BaseModel):
+    product_id: int = Field(gt=0)
+    quantity: int = Field(gt=0, default=1)
+
+class CartItemResponse(BaseModel):
+    id: int
+    product_id: int
+    quantity: int
+    product: ProductResponse
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ─────────────────────────────────────────
+# ORDER & PAYMENT SCHEMAS
+# ─────────────────────────────────────────
+
+class OrderItemCreate(BaseModel):
+    """One item inside an order"""
+    product_id: int = Field(gt=0, description="Valid product ID")
+    quantity: int = Field(gt=0, description="Must be at least 1")
+
+class OrderCreate(BaseModel):
+    """Used when placing an order"""
+    address: str = Field(min_length=1, description="Delivery address")
+    items: List[OrderItemCreate]  # list of products being ordered
+    payment_method: Optional[str] = "razorpay"
+
+class RazorpayOrderCreate(BaseModel):
+    order_id: int
+
+class RazorpayVerifyRequest(BaseModel):
+    order_id: int
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+
+class OrderItemResponse(BaseModel):
+    """One item returned in order response"""
+    id: int
+    product_id: int
+    quantity: int
+    price: float
+    product: ProductResponse
+
+    class Config:
+        from_attributes = True
+
+class OrderResponse(BaseModel):
+    """Full order details returned to user"""
+    id: int
+    user_id: int
+    total_amount: float
+    status: str
+    address: str
+    payment_method: Optional[str] = "razorpay"
+    payment_status: Optional[str] = "pending"
+    razorpay_order_id: Optional[str] = None
+    razorpay_payment_id: Optional[str] = None
+    created_at: datetime
+    order_items: List[OrderItemResponse]
+
+    class Config:
+        from_attributes = True
+
+
+# ─────────────────────────────────────────
+# ADMIN DASHBOARD SCHEMAS
+# ─────────────────────────────────────────
+
+class AdminStatsResponse(BaseModel):
+    total_revenue: float
+    total_orders: int
+    total_products: int
+    total_users: int
+    low_stock_products: List[ProductResponse]
+    recent_orders: List[OrderResponse]
+
+
+# ─────────────────────────────────────────
+# CHAT SCHEMAS
+# ─────────────────────────────────────────
+
+class ChatMessage(BaseModel):
+    """Message sent to AI chatbot"""
+    message: str
+
+class ChatResponse(BaseModel):
+    """Response from AI chatbot"""
+    reply: str

@@ -1,0 +1,25 @@
+:root {
+  --bg-dark: #070913;
+  --bg-card: rgba(18, 24, 43, 0.75);
+  --bg-card-hover: rgba(28, 36, 62, 0.85);
+  --bg-glass: rgba(15, 21, 37, 0.65);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(0, 240, 255, 0.3);
+  
+  --primary-cyan: #00f0ff;
+  --primary-purple: #7000ff;
+  --accent-pink: #ff007f;
+  --success-green: #00ffaa;
+  --warning-amber: #ffaa00;
+  --danger-red: #ff3366;
+  
+  --text-main: #f0f4fc;
+  --text-muted: #8a99b5;
+  --text-dim: #50617a;
+
+  --font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --glow-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+  --purple-glow: 0 0 20px rgba(112, 0, 255, 0.3);
+}
