@@ -43,20 +43,16 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "ok", "app": settings.APP_NAME}
-@app.get("/make-admin")
-def make_admin(db: Session = Depends(get_db)):
-    user = db.query(User).filter(
-        User.email == "prasad@test.com"
-    ).first()
+@app.get("/list-users")
+def list_users(db: Session = Depends(get_db)):
+    users = db.query(User).all()
 
-    if user is None:
-        return {
-            "error": "User not found"
+    return [
+        {
+            "id": user.id,
+            "name": user.full_name,
+            "email": user.email,
+            "is_admin": user.is_admin
         }
-
-    user.is_admin = True
-    db.commit()
-
-    return {
-        "message": "User is now admin"
-    }
+        for user in users
+    ]
