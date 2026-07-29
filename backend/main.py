@@ -50,7 +50,9 @@ def make_admin(db: Session = Depends(get_db)):
     ).first()
 
     if user is None:
-        return {"error": "User not found"}
+        return {
+            "error": "User not found"
+        }
 
     user.is_admin = True
     db.commit()
