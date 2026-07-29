@@ -12,3 +12,4 @@ google-generativeai
 httpx==0.28.1
 razorpay
 email-validator
+psycopg2-binary
