@@ -1,15 +1,16 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 
-from backend.database import engine, Base, get_db
+from backend.database import engine, Base
 from backend.config import settings
+
 import backend.models
 
 from backend.routers import auth, products, orders, chat, cart, admin
-from backend.models import User
 
 
+# Create database tables
+# For production later, replace with Alembic migrations
 Base.metadata.create_all(bind=engine)
 
 
@@ -22,7 +23,8 @@ app = FastAPI(
 )
 
 
-# TODO: Restrict allow_origins to your deployed frontend URL(s) before production
+# CORS
+# Change allow_origins to your frontend URL before final production
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -33,6 +35,7 @@ app.add_middleware(
 
 
 # Routers
+
 app.include_router(
     auth.router,
     prefix="/api/auth",
@@ -85,29 +88,9 @@ def health_check():
         "status": "ok",
         "app": settings.APP_NAME
     }
-
-
-# Temporary endpoint to create admin user
-# Delete this after running once
-@app.get("/make-admin")
-def make_admin(db: Session = Depends(get_db)):
-
-    user = db.query(User).filter(
-        User.email == "prasad@test.com"
-    ).first()
-
-    if user is None:
-        return {
-            "error": "User not found"
-        }
-
-    user.is_admin = True
-
-    db.commit()
-    db.refresh(user)
-
+@app.get("/debug/database")
+def debug_database():
+    from backend.database import DATABASE_URL
     return {
-        "message": "User is now admin",
-        "email": user.email,
-        "is_admin": user.is_admin
+        "database": DATABASE_URL[:50]
     }
