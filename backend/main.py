@@ -1,15 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from backend.database import engine, Base
+from sqlalchemy.orm import Session
+
+from backend.database import engine, Base, get_db
 from backend.config import settings
 import backend.models
+
 from backend.routers import auth, products, orders, chat, cart, admin
-from fastapi import Depends
-from sqlalchemy.orm import Session
-from backend.database import get_db
 from backend.models import User
 
+
 Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -19,8 +21,8 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
+
 # TODO: Restrict allow_origins to your deployed frontend URL(s) before production
-# (e.g. ["https://nexora.example.com"]). Using "*" is fine for local dev only.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,48 +31,83 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router,     prefix="/api/auth",     tags=["Auth"])
-app.include_router(products.router, prefix="/api/products", tags=["Products"])
-app.include_router(cart.router,     prefix="/api/cart",     tags=["Cart"])
-app.include_router(orders.router,   prefix="/api/orders",   tags=["Orders"])
-app.include_router(admin.router,    prefix="/api/admin",    tags=["Admin"])
-app.include_router(chat.router,     prefix="/api/chat",     tags=["Chat"])
+
+# Routers
+app.include_router(
+    auth.router,
+    prefix="/api/auth",
+    tags=["Auth"]
+)
+
+app.include_router(
+    products.router,
+    prefix="/api/products",
+    tags=["Products"]
+)
+
+app.include_router(
+    cart.router,
+    prefix="/api/cart",
+    tags=["Cart"]
+)
+
+app.include_router(
+    orders.router,
+    prefix="/api/orders",
+    tags=["Orders"]
+)
+
+app.include_router(
+    admin.router,
+    prefix="/api/admin",
+    tags=["Admin"]
+)
+
+app.include_router(
+    chat.router,
+    prefix="/api/chat",
+    tags=["Chat"]
+)
+
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to Nexora API", "version": "1.0.0", "docs": "/docs"}
+    return {
+        "message": "Welcome to Nexora API",
+        "version": "1.0.0",
+        "docs": "/docs"
+    }
+
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "app": settings.APP_NAME}
+    return {
+        "status": "ok",
+        "app": settings.APP_NAME
+    }
+
+
+# Temporary endpoint to create admin user
+# Delete this after running once
 @app.get("/make-admin")
 def make_admin(db: Session = Depends(get_db)):
-    users = db.query(User).all()
+
+    user = db.query(User).filter(
+        User.email == "prasad@test.com"
+    ).first()
+
+    if user is None:
+        return {
+            "error": "User not found"
+        }
+
+    user.is_admin = True
+
+    db.commit()
+    db.refresh(user)
 
     return {
-        "count": len(users),
-        "users": [
-            {
-                "id": user.id,
-                "email": user.email,
-                "is_admin": user.is_admin
-            }
-            for user in users
-        ]
-    }
-@app.get("/db-test")
-def db_test(db: Session = Depends(get_db)):
-    users = db.query(User).all()
-
-    return {
-        "database_check": "connected",
-        "count": len(users),
-        "users": [
-            {
-                "id": user.id,
-                "email": user.email,
-                "is_admin": user.is_admin
-            }
-            for user in users
-        ]
+        "message": "User is now admin",
+        "email": user.email,
+        "is_admin": user.is_admin
     }
