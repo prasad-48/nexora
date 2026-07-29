@@ -58,3 +58,19 @@ def make_admin(db: Session = Depends(get_db)):
             for user in users
         ]
     }
+@app.get("/db-test")
+def db_test(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+
+    return {
+        "database_check": "connected",
+        "count": len(users),
+        "users": [
+            {
+                "id": user.id,
+                "email": user.email,
+                "is_admin": user.is_admin
+            }
+            for user in users
+        ]
+    }
