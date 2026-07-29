@@ -45,21 +45,16 @@ def health_check():
     return {"status": "ok", "app": settings.APP_NAME}
 @app.get("/make-admin")
 def make_admin(db: Session = Depends(get_db)):
-    user = db.query(User).filter(
-        User.email == "prasad@test.com"
-    ).first()
-
-    if user is None:
-        return {
-            "error": "User not found"
-        }
-
-    user.is_admin = True
-    db.commit()
-    db.refresh(user)
+    users = db.query(User).all()
 
     return {
-        "message": "User is now admin",
-        "email": user.email,
-        "is_admin": user.is_admin
+        "count": len(users),
+        "users": [
+            {
+                "id": user.id,
+                "email": user.email,
+                "is_admin": user.is_admin
+            }
+            for user in users
+        ]
     }
