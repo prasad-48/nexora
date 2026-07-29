@@ -4,6 +4,10 @@ from backend.database import engine, Base
 from backend.config import settings
 import backend.models
 from backend.routers import auth, products, orders, chat, cart, admin
+from fastapi import Depends
+from sqlalchemy.orm import Session
+from backend.database import get_db
+from backend.models import User
 
 Base.metadata.create_all(bind=engine)
 
@@ -39,3 +43,20 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "ok", "app": settings.APP_NAME}
+@app.get("/make-admin")
+def make_admin(db: Session = Depends(get_db)):
+    user = db.query(User).filter(
+        User.email == "prasad@test.com"
+    ).first()
+
+    if user is None:
+        return {
+            "error": "User not found"
+        }
+
+    user.is_admin = True
+    db.commit()
+
+    return {
+        "message": "User is now admin"
+    }
