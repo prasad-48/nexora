@@ -75,7 +75,7 @@ function updateNavAuth() {
           <i class="ti ti-chevron-down text-xs text-gray-400"></i>
         </button>
 
-        <div class="absolute right-0 mt-2 w-56 glass-panel-static p-2 shadow-2xl rounded-2xl hidden group-hover:block z-50 animate-fadeIn">
+        <div class="absolute right-0 top-full mt-1 w-56 glass-panel-static p-2 shadow-2xl rounded-2xl hidden group-hover:block z-50 animate-fadeIn">
           <div class="px-3 py-2 border-b border-white/10 mb-1">
             <p class="text-xs text-cyan-400 font-semibold uppercase tracking-wider">Signed in as</p>
             <p class="text-sm font-bold text-white truncate">${user ? user.full_name : ''}</p>
